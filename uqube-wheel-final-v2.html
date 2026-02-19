@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spinning the Wheel - U'Qube</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/supabase-config.js"></script>
+  <style>
+    :root {
+      --black: #1a1a1a;
+      --dark2: #0f0f0f;
+      --gold: #C9A96E;
+      --gold-dark: #8A7A60;
+      --accent: #E07340;
+      --text: #E8E6E3;
+      --text-dim: #A39D95;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--black);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+      overflow-y: auto;
+    }
+
+    .spin-container {
+      text-align: center;
+      max-width: 600px;
+      width: 100%;
+      padding: 24px;
+    }
+
+    h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 36px;
+      margin-bottom: 16px;
+    }
+
+    h1 em {
+      color: var(--gold);
+      font-style: normal;
+    }
+
+    .subtitle {
+      font-size: 18px;
+      color: var(--text-dim);
+      margin-bottom: 20px;
+    }
+
+    .spin-info {
+      font-size: 16px;
+      color: var(--text-dim);
+      margin-bottom: 30px;
+    }
+
+    .spin-info strong {
+      color: var(--gold);
+    }
+
+    /* Wheel container */
+    .wheel-wrapper {
+      position: relative;
+      width: 400px;
+      height: 400px;
+      margin: 0 auto 40px;
+    }
+
+    #canvas {
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Pointer */
+    .pointer {
+      position: absolute;
+      top: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-left: 30px solid transparent;
+      border-right: 30px solid transparent;
+      border-top: 50px solid #FDDC5C;  /* Warm bright gold */
+      z-index: 30;
+      filter: drop-shadow(0 4px 12px rgba(253,220,92,0.8));
+    }
+
+    /* Dice at center of wheel */
+    .dice-center {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 90px;
+      height: 90px;
+      background: var(--gold);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 42px;
+      z-index: 10;
+      box-shadow: 0 4px 20px rgba(201,169,110,0.6);
+      border: 3px solid #2A2218;
+      cursor: pointer;
+      animation: dicePulse 2s ease-in-out infinite;
+    }
+
+    @keyframes dicePulse {
+      0%, 100% { transform: translate(-50%, -50%) scale(1); }
+      50% { transform: translate(-50%, -50%) scale(1.08); box-shadow: 0 6px 28px rgba(201,169,110,0.8); }
+    }
+
+    .dice-center:hover {
+      transform: translate(-50%, -50%) scale(1.15);
+      animation: none;
+    }
+
+    .dice-center:active {
+      transform: translate(-50%, -50%) scale(0.95);
+    }
+
+    .dice-center.disabled {
+      cursor: not-allowed;
+      opacity: 0.5;
+      animation: none;
+    }
+
+    /* Celebration container */
+    .celebration {
+      display: none;
+      text-align: center;
+      animation: fadeIn 0.8s ease;
+    }
+
+    .celebration.show {
+      display: block;
+    }
+
+    .celebration h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 48px;
+      color: var(--gold);
+      margin-bottom: 20px;
+      animation: bounceIn 0.8s ease;
+    }
+
+    .celebration-icon {
+      font-size: 80px;
+      margin-bottom: 20px;
+      animation: spin 1s ease;
+    }
+
+    @keyframes bounceIn {
+      0% { transform: scale(0); opacity: 0; }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    /* Confetti */
+    .confetti {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background: var(--gold);
+      animation: confettiFall 3s ease-out forwards;
+    }
+
+    @keyframes confettiFall {
+      to {
+        transform: translateY(100vh) rotate(720deg);
+        opacity: 0;
+      }
+    }
+
+    .results h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 28px;
+      color: var(--gold);
+      margin-bottom: 24px;
+    }
+
+    .payout-order {
+      background: rgba(201,169,110,0.05);
+      border: 1px solid rgba(201,169,110,0.15);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 32px;
+    }
+
+    .payout-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(201,169,110,0.1);
+      opacity: 0.3;
+    }
+
+    .payout-item:last-child {
+      border-bottom: none;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0.3; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .payout-month {
+      font-size: 14px;
+      color: var(--text-dim);
+    }
+
+    .payout-name {
+      font-size: 16px;
+      font-weight: 500;
+      color: var(--gold);
+    }
+
+    .btn {
+      background: var(--gold);
+      color: var(--black);
+      border: none;
+      padding: 16px 48px;
+      font-size: 16px;
+      font-weight: 500;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    .btn:hover {
+      background: var(--gold-dark);
+      transform: translateY(-2px);
+    }
+
+    @media (max-width: 768px) {
+      .wheel-wrapper {
+        width: 320px;
+        height: 320px;
+      }
+
+      h1 {
+        font-size: 28px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="spin-container">
+    
+    <h1>Spinning the <em>Wheel</em></h1>
+    <p class="subtitle">Click the button to spin!</p>
+    <p class="spin-info">Spin <strong id="spinCount">0 of 5</strong></p>
+
+    <!-- Wheel -->
+    <div class="wheel-wrapper" id="wheelWrapper">
+      <div class="pointer"></div>
+      <canvas id="canvas" width="400" height="400"></canvas>
+      <div class="dice-center" id="diceBtn" onclick="startSpin()">🎲</div>
+    </div>
+
+    <!-- Celebration when order is complete -->
+    <div class="celebration" id="celebration">
+      <div class="celebration-icon">🎉</div>
+      <h2>Payout Order Set!</h2>
+      <p style="font-size: 18px; color: var(--text-dim);">The wheel has decided your payout schedule</p>
+    </div>
+
+    <!-- Results -->
+    <div class="results">
+      <h2>Payout Order</h2>
+      
+      <div class="payout-order">
+        <div class="payout-item" id="slot1">
+          <span class="payout-month">—</span>
+          <span class="payout-name">—</span>
+        </div>
+        <div class="payout-item" id="slot2">
+          <span class="payout-month">—</span>
+          <span class="payout-name">—</span>
+        </div>
+        <div class="payout-item" id="slot3">
+          <span class="payout-month">—</span>
+          <span class="payout-name">—</span>
+        </div>
+        <div class="payout-item" id="slot4">
+          <span class="payout-month">—</span>
+          <span class="payout-name">—</span>
+        </div>
+        <div class="payout-item" id="slot5">
+          <span class="payout-month">—</span>
+          <span class="payout-name">—</span>
+        </div>
+      </div>
+
+      <button class="btn" id="dashboardBtn" style="display:none;" onclick="window.location.href='uqube-dashboard-full-active.html'">View Dashboard</button>
+    </div>
+
+  </div>
+
+  <script>
+    // Wheel configuration - alternating warm colors
+    const segments = [
+      { text: 'Alice W.', fillStyle: '#C9A96E' },     // Gold
+      { text: 'Bob J.', fillStyle: '#E07340' },       // Orange
+      { text: 'Charlie D.', fillStyle: '#EDE0C4' },   // Cream2
+      { text: 'You', fillStyle: '#C85A2A' },          // Accent2 orange
+      { text: 'Mary S.', fillStyle: '#E8D5A3' }       // Light gold
+    ];
+
+    let currentSpin = 0;
+    const totalSpins = 5;
+    const usedMembers = [];
+    let isSpinning = false;
+    let currentRotation = 0;
+
+    // Draw the wheel
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const centerX = canvas.width / 2;
+    const centerY = canvas.height / 2;
+    const radius = 190;
+
+    function drawWheel() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      const anglePerSegment = (2 * Math.PI) / segments.length;
+      
+      segments.forEach((segment, index) => {
+        const startAngle = index * anglePerSegment + currentRotation;
+        const endAngle = startAngle + anglePerSegment;
+        
+        // Draw segment
+        ctx.beginPath();
+        ctx.moveTo(centerX, centerY);
+        ctx.arc(centerX, centerY, radius, startAngle, endAngle);
+        ctx.closePath();
+        ctx.fillStyle = segment.fillStyle;
+        ctx.fill();
+        ctx.strokeStyle = '#C9A96E';  // Gold borders
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        
+        // Draw text
+        ctx.save();
+        ctx.translate(centerX, centerY);
+        ctx.rotate(startAngle + anglePerSegment / 2);
+        ctx.textAlign = 'right';
+        ctx.fillStyle = '#1a1a1a';
+        ctx.font = 'bold 18px DM Sans';
+        ctx.shadowColor = 'rgba(255,255,255,0.3)';
+        ctx.shadowBlur = 3;
+        ctx.fillText(segment.text, radius - 30, 8);
+        ctx.restore();
+      });
+      
+      // Draw center circle (behind the dice)
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, 35, 0, 2 * Math.PI);
+      ctx.fillStyle = '#0A0804';  // Dark background
+      ctx.fill();
+      ctx.strokeStyle = '#FFD700';  // Bright gold border
+      ctx.lineWidth = 3;
+      ctx.stroke();
+    }
+
+    drawWheel();
+
+    function startSpin() {
+      if (isSpinning || currentSpin >= totalSpins) return;
+      
+      isSpinning = true;
+      currentSpin++;
+      
+      document.getElementById('spinCount').textContent = `${currentSpin} of ${totalSpins}`;
+      document.getElementById('diceBtn').classList.add('disabled');
+      
+      // If only 1 segment left, auto-assign without spinning
+      if (segments.length === 1) {
+        const lastMember = segments[0].text;
+        
+        // Update table immediately
+        const slot = document.getElementById(`slot${currentSpin}`);
+        slot.querySelector('.payout-month').textContent = `Month ${currentSpin}`;
+        slot.querySelector('.payout-name').textContent = lastMember;
+        slot.style.opacity = '1';
+        slot.style.animation = 'fadeIn 0.5s ease';
+        
+        // Show dashboard button
+        document.getElementById('dashboardBtn').style.display = 'inline-block';
+        document.getElementById('diceBtn').style.display = 'none';
+        
+        return;
+      }
+      
+      // Select random segment from remaining ones
+      const randomIndex = Math.floor(Math.random() * segments.length);
+      const selected = segments[randomIndex];
+      
+      // Calculate target rotation to land selected segment at TOP (under pointer)
+      const anglePerSegment = (2 * Math.PI) / segments.length;
+      const targetSegmentAngle = randomIndex * anglePerSegment;
+      const spins = 4; // Number of full rotations
+      const topPosition = -Math.PI / 2; // Top of wheel
+      const segmentCenter = targetSegmentAngle + (anglePerSegment / 2);
+      const totalRotation = (spins * 2 * Math.PI) + (topPosition - segmentCenter);
+      
+      // Animate with GSAP
+      gsap.to({ rotation: currentRotation }, {
+        rotation: currentRotation + totalRotation,
+        duration: 4,
+        ease: 'power2.out',
+        onUpdate: function() {
+          currentRotation = this.targets()[0].rotation;
+          drawWheel();
+        },
+        onComplete: function() {
+          // Update table
+          const slot = document.getElementById(`slot${currentSpin}`);
+          slot.querySelector('.payout-month').textContent = `Month ${currentSpin}`;
+          slot.querySelector('.payout-name').textContent = selected.text;
+          slot.style.opacity = '1';
+          slot.style.animation = 'fadeIn 0.5s ease';
+          
+          // REMOVE the selected segment from the array
+          segments.splice(randomIndex, 1);
+          
+          // Reset rotation to 0 and redraw with remaining segments
+          currentRotation = 0;
+          drawWheel();
+          
+          // Check if only 1 person left after this spin
+          if (segments.length === 1 && currentSpin < totalSpins) {
+            // Automatically add the last person
+            setTimeout(() => {
+              currentSpin++;
+              const lastMember = segments[0].text;
+              
+              document.getElementById('spinCount').textContent = `${currentSpin} of ${totalSpins}`;
+              
+              const slot = document.getElementById(`slot${currentSpin}`);
+              slot.querySelector('.payout-month').textContent = `Month ${currentSpin}`;
+              slot.querySelector('.payout-name').textContent = lastMember;
+              slot.style.opacity = '1';
+              slot.style.animation = 'fadeIn 0.5s ease';
+              
+              // Hide wheel and show celebration
+              setTimeout(() => {
+                document.getElementById('wheelWrapper').style.display = 'none';
+                document.getElementById('celebration').classList.add('show');
+                
+                // Create confetti
+                for (let i = 0; i < 50; i++) {
+                  setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + '%';
+                    confetti.style.background = ['#C9A96E', '#E07340', '#E8D5A3', '#FDDC5C'][Math.floor(Math.random() * 4)];
+                    confetti.style.animationDelay = Math.random() * 0.5 + 's';
+                    document.querySelector('.spin-container').appendChild(confetti);
+                    setTimeout(() => confetti.remove(), 3000);
+                  }, i * 30);
+                }
+                
+                // Show dashboard button
+                document.getElementById('dashboardBtn').style.display = 'inline-block';
+              }, 500);
+            }, 1000);
+          } else if (currentSpin < totalSpins) {
+            document.getElementById('diceBtn').classList.remove('disabled');
+            isSpinning = false;
+          } else {
+            document.getElementById('dashboardBtn').style.display = 'inline-block';
+            document.getElementById('diceBtn').style.display = 'none';
+          }
+        }
+      });
+    }
+  </script>
+
+</body>
+</html>

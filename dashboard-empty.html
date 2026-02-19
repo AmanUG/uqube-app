@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - U'Qube</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  
+  <!-- Supabase SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/supabase-config.js"></script>
+  
+  <style>
+    :root {
+      --black: #1a1a1a;
+      --dark2: #0f0f0f;
+      --gold: #C9A96E;
+      --gold-dark: #8A7A60;
+      --accent: #E07340;
+      --text: #E8E6E3;
+      --text-dim: #A39D95;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--black);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Top Navigation */
+    .top-nav {
+      background: var(--dark2);
+      border-bottom: 1px solid rgba(201,169,110,0.1);
+      padding: 16px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 24px;
+      color: var(--gold);
+      font-weight: 600;
+    }
+
+    .user-menu {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .user-name {
+      color: var(--text-dim);
+      font-size: 14px;
+    }
+
+    .user-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--gold);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      color: var(--black);
+      cursor: pointer;
+    }
+
+    /* Empty State Container */
+    .empty-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 24px;
+      text-align: center;
+    }
+
+    .empty-icon {
+      font-size: 80px;
+      margin-bottom: 24px;
+      opacity: 0.5;
+    }
+
+    .empty-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 36px;
+      color: var(--gold);
+      margin-bottom: 16px;
+    }
+
+    .empty-subtitle {
+      font-size: 18px;
+      color: var(--text-dim);
+      margin-bottom: 40px;
+      max-width: 500px;
+    }
+
+    .btn-large {
+      background: var(--gold);
+      color: var(--black);
+      border: none;
+      padding: 16px 40px;
+      font-size: 16px;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-family: 'DM Sans', sans-serif;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn-large:hover {
+      background: var(--gold-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(201,169,110,0.3);
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 24px;
+      max-width: 900px;
+      margin-top: 60px;
+    }
+
+    .feature-card {
+      background: rgba(201,169,110,0.05);
+      border: 1px solid rgba(201,169,110,0.15);
+      border-radius: 12px;
+      padding: 24px;
+      text-align: center;
+    }
+
+    .feature-icon {
+      font-size: 40px;
+      margin-bottom: 16px;
+    }
+
+    .feature-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--gold);
+      margin-bottom: 8px;
+    }
+
+    .feature-desc {
+      font-size: 14px;
+      color: var(--text-dim);
+      line-height: 1.5;
+    }
+
+    /* Logout button */
+    .btn-ghost {
+      background: transparent;
+      border: 1px solid rgba(201,169,110,0.3);
+      color: var(--text-dim);
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn-ghost:hover {
+      border-color: var(--gold);
+      color: var(--gold);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation -->
+  <div class="top-nav">
+    <div class="logo">U'Qube</div>
+    <div class="user-menu">
+      <span class="user-name" id="userName">Loading...</span>
+      <button class="btn-ghost" onclick="logout()">Logout</button>
+      <div class="user-avatar" id="userAvatar">--</div>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div class="empty-container">
+    <div class="empty-icon">👥</div>
+    <h1 class="empty-title">Welcome to U'Qube!</h1>
+    <p class="empty-subtitle">
+      You haven't joined or created any savings groups yet. 
+      Start your journey by creating your first group with people you trust.
+    </p>
+    <a href="/create-group.html" class="btn-large">Create Your First Group</a>
+
+    <!-- Features -->
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">💰</div>
+        <div class="feature-title">Pool Together</div>
+        <div class="feature-desc">Save with trusted friends and family in traditional ROSCA style</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🎲</div>
+        <div class="feature-title">Fair & Random</div>
+        <div class="feature-desc">Wheel spin determines payout order - completely transparent</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📹</div>
+        <div class="feature-title">Stay Connected</div>
+        <div class="feature-desc">Video chat with your group for meetings and celebrations</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Check authentication and load user data
+    async function initDashboard() {
+      const user = await getCurrentUser();
+      if (!user) return;
+
+      // Get user profile
+      const profile = await getUserProfile(user.id);
+      if (profile) {
+        document.getElementById('userName').textContent = profile.full_name;
+        const initials = profile.full_name.split(' ').map(n => n[0]).join('');
+        document.getElementById('userAvatar').textContent = initials;
+      }
+
+      // Check if user has any groups
+      const { data: groups } = await supabase
+        .from('group_members')
+        .select('*, groups(*)')
+        .eq('user_id', user.id);
+
+      if (groups && groups.length > 0) {
+        // User has groups - redirect to appropriate dashboard
+        const group = groups[0].groups;
+        if (group.status === 'pending') {
+          window.location.href = '/dashboard-pending.html';
+        } else if (group.status === 'active') {
+          window.location.href = '/dashboard.html';
+        }
+      }
+    }
+
+    // Run on page load
+    initDashboard();
+  </script>
+
+</body>
+</html>

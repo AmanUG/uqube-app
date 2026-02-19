@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pending Group - U'Qube</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  
+  <!-- Supabase SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/supabase-config.js"></script>
+  
+  <style>
+    :root {
+      --black: #1a1a1a;
+      --dark2: #0f0f0f;
+      --gold: #C9A96E;
+      --gold-dark: #8A7A60;
+      --accent: #E07340;
+      --text: #E8E6E3;
+      --text-dim: #A39D95;
+      --green: #4CAF50;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--black);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* Top Navigation */
+    .top-nav {
+      background: var(--dark2);
+      border-bottom: 1px solid rgba(201,169,110,0.1);
+      padding: 16px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 24px;
+      color: var(--gold);
+      font-weight: 600;
+    }
+
+    .user-menu {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .btn-ghost {
+      background: transparent;
+      border: 1px solid rgba(201,169,110,0.3);
+      color: var(--text-dim);
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 40px 24px;
+    }
+
+    /* Status Banner */
+    .status-banner {
+      background: rgba(224,115,64,0.1);
+      border: 1px solid var(--accent);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 32px;
+      text-align: center;
+    }
+
+    .status-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+    }
+
+    .status-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 28px;
+      color: var(--gold);
+      margin-bottom: 8px;
+    }
+
+    .status-subtitle {
+      color: var(--text-dim);
+      font-size: 16px;
+    }
+
+    /* Group Card */
+    .group-card {
+      background: rgba(201,169,110,0.05);
+      border: 1px solid rgba(201,169,110,0.15);
+      border-radius: 16px;
+      padding: 32px;
+      margin-bottom: 32px;
+    }
+
+    .group-header {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 24px;
+      color: var(--gold);
+      margin-bottom: 24px;
+    }
+
+    .group-info {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 24px;
+      margin-bottom: 32px;
+    }
+
+    .info-item {
+      text-align: center;
+    }
+
+    .info-label {
+      font-size: 13px;
+      color: var(--text-dim);
+      margin-bottom: 8px;
+    }
+
+    .info-value {
+      font-size: 24px;
+      font-weight: 600;
+      color: var(--gold);
+    }
+
+    /* Members List */
+    .members-section h3 {
+      font-size: 18px;
+      color: var(--text);
+      margin-bottom: 16px;
+    }
+
+    .member-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px;
+      background: rgba(201,169,110,0.05);
+      border: 1px solid rgba(201,169,110,0.1);
+      border-radius: 12px;
+      margin-bottom: 12px;
+    }
+
+    .member-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .member-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--gold);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      color: var(--black);
+    }
+
+    .member-name {
+      font-size: 16px;
+      color: var(--text);
+    }
+
+    .payment-status {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .status-badge {
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .status-paid {
+      background: rgba(76,175,80,0.2);
+      color: var(--green);
+    }
+
+    .status-pending {
+      background: rgba(224,115,64,0.2);
+      color: var(--accent);
+    }
+
+    .btn-pay {
+      background: var(--gold);
+      color: var(--black);
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .btn-pay:hover {
+      background: var(--gold-dark);
+    }
+
+    /* Progress Bar */
+    .progress-section {
+      margin-top: 32px;
+      padding: 24px;
+      background: rgba(201,169,110,0.05);
+      border-radius: 12px;
+    }
+
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      font-size: 14px;
+    }
+
+    .progress-bar {
+      height: 12px;
+      background: rgba(201,169,110,0.1);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--gold);
+      transition: width 0.3s ease;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation -->
+  <div class="top-nav">
+    <div class="logo">U'Qube</div>
+    <div class="user-menu">
+      <button class="btn-ghost" onclick="logout()">Logout</button>
+    </div>
+  </div>
+
+  <!-- Container -->
+  <div class="container">
+    
+    <!-- Status Banner -->
+    <div class="status-banner">
+      <div class="status-icon">⏳</div>
+      <h1 class="status-title">Waiting for All Payments</h1>
+      <p class="status-subtitle">Your group will be activated once all members pay their deposit and first contribution</p>
+    </div>
+
+    <!-- Group Info -->
+    <div class="group-card">
+      <h2 class="group-header" id="groupName">Loading...</h2>
+      
+      <div class="group-info">
+        <div class="info-item">
+          <div class="info-label">Monthly Contribution</div>
+          <div class="info-value" id="monthlyContribution">£--</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">Deposit Required</div>
+          <div class="info-value" id="depositAmount">£--</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">Total Members</div>
+          <div class="info-value">5</div>
+        </div>
+      </div>
+
+      <!-- Members List -->
+      <div class="members-section">
+        <h3>Group Members & Payment Status</h3>
+        <div id="membersList">
+          <!-- Populated by JavaScript -->
+        </div>
+      </div>
+
+      <!-- Progress -->
+      <div class="progress-section">
+        <div class="progress-label">
+          <span>Payment Progress</span>
+          <span id="progressText">0 of 5 paid</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    let currentGroup = null;
+    let currentUser = null;
+
+    async function initPendingDashboard() {
+      currentUser = await getCurrentUser();
+      if (!currentUser) return;
+
+      // Get user's group
+      const { data: groupMembers } = await supabase
+        .from('group_members')
+        .select('*, groups(*)')
+        .eq('user_id', currentUser.id)
+        .single();
+
+      if (!groupMembers || !groupMembers.groups) {
+        // No group found, redirect to empty dashboard
+        window.location.href = '/dashboard-empty.html';
+        return;
+      }
+
+      currentGroup = groupMembers.groups;
+
+      // Check group status
+      if (currentGroup.status === 'active') {
+        window.location.href = '/dashboard.html';
+        return;
+      }
+
+      // Load group data
+      document.getElementById('groupName').textContent = currentGroup.name;
+      document.getElementById('monthlyContribution').textContent = `£${currentGroup.monthly_contribution}`;
+      document.getElementById('depositAmount').textContent = `£${currentGroup.deposit_amount}`;
+
+      // Load all members
+      await loadMembers();
+    }
+
+    async function loadMembers() {
+      const { data: members } = await supabase
+        .from('group_members')
+        .select('*, profiles(*)')
+        .eq('group_id', currentGroup.id)
+        .order('joined_at', { ascending: true });
+
+      const membersList = document.getElementById('membersList');
+      membersList.innerHTML = '';
+
+      let paidCount = 0;
+
+      members.forEach((member, index) => {
+        const profile = member.profiles;
+        const isPaid = member.deposit_paid && member.first_contribution_paid;
+        const isCurrentUser = member.user_id === currentUser.id;
+
+        if (isPaid) paidCount++;
+
+        const initials = profile.full_name.split(' ').map(n => n[0]).join('');
+        
+        const memberHTML = `
+          <div class="member-item">
+            <div class="member-info">
+              <div class="member-avatar">${initials}</div>
+              <div class="member-name">${isCurrentUser ? 'You' : profile.full_name}</div>
+            </div>
+            <div class="payment-status">
+              ${isPaid 
+                ? '<span class="status-badge status-paid">✓ Paid</span>'
+                : isCurrentUser 
+                  ? '<button class="btn-pay" onclick="mockPayment()">Pay Now</button>'
+                  : '<span class="status-badge status-pending">Pending</span>'
+              }
+            </div>
+          </div>
+        `;
+
+        membersList.innerHTML += memberHTML;
+      });
+
+      // Update progress
+      const progress = (paidCount / 5) * 100;
+      document.getElementById('progressFill').style.width = progress + '%';
+      document.getElementById('progressText').textContent = `${paidCount} of 5 paid`;
+
+      // Check if all paid
+      if (paidCount === 5) {
+        setTimeout(() => {
+          alert('All members have paid! Time to spin the wheel and determine payout order!');
+          window.location.href = `/wheel-spin.html?groupId=${currentGroup.id}`;
+        }, 1000);
+      }
+    }
+
+    async function mockPayment() {
+      if (!confirm('Mock Payment: Mark your payment as complete? (In production, this would process via Stripe)')) {
+        return;
+      }
+
+      // Update payment status
+      const { error } = await supabase
+        .from('group_members')
+        .update({
+          deposit_paid: true,
+          first_contribution_paid: true
+        })
+        .eq('group_id', currentGroup.id)
+        .eq('user_id', currentUser.id);
+
+      if (error) {
+        alert('Error processing payment: ' + error.message);
+        return;
+      }
+
+      // Reload members
+      await loadMembers();
+    }
+
+    // Run on page load
+    initPendingDashboard();
+  </script>
+
+</body>
+</html>
