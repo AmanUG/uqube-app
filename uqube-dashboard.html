@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - U'Qube</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --black: #1a1a1a;
+      --dark2: #0f0f0f;
+      --gold: #C9A96E;
+      --gold-dark: #8A7A60;
+      --accent: #E07340;
+      --text: #E8E6E3;
+      --text-dim: #A39D95;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--black);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* Top Navigation */
+    .top-nav {
+      background: var(--dark2);
+      border-bottom: 1px solid rgba(201,169,110,0.1);
+      padding: 16px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 24px;
+      color: var(--gold);
+      font-weight: 600;
+    }
+
+    .user-menu {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .user-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: rgba(201,169,110,0.15);
+      border: 1px solid rgba(201,169,110,0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      color: var(--gold);
+      cursor: pointer;
+    }
+
+    /* Main Container */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 48px 24px;
+    }
+
+    /* Empty State */
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      min-height: 70vh;
+      padding: 48px 24px;
+    }
+
+    .empty-illustration {
+      width: 200px;
+      height: 200px;
+      margin-bottom: 32px;
+      position: relative;
+    }
+
+    .empty-illustration svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    .empty-state h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 42px;
+      line-height: 1.2;
+      margin-bottom: 16px;
+      color: var(--text);
+    }
+
+    .empty-state h1 em {
+      color: var(--gold);
+      font-style: normal;
+    }
+
+    .empty-state p {
+      font-size: 18px;
+      line-height: 1.6;
+      color: var(--text-dim);
+      max-width: 480px;
+      margin: 0 auto 40px;
+    }
+
+    .btn-large {
+      background: var(--gold);
+      color: var(--black);
+      border: none;
+      padding: 18px 48px;
+      font-size: 16px;
+      font-weight: 500;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-family: 'DM Sans', sans-serif;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn-large:hover {
+      background: var(--gold-dark);
+      transform: translateY(-2px);
+    }
+
+    /* Info Cards */
+    .info-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+      margin-top: 64px;
+      max-width: 900px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .info-card {
+      background: rgba(201,169,110,0.05);
+      border: 1px solid rgba(201,169,110,0.15);
+      border-radius: 12px;
+      padding: 24px;
+      text-align: left;
+    }
+
+    .info-card-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: rgba(201,169,110,0.1);
+      border: 1px solid rgba(201,169,110,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      margin-bottom: 16px;
+    }
+
+    .info-card h3 {
+      font-size: 18px;
+      font-weight: 500;
+      margin-bottom: 8px;
+      color: var(--gold);
+    }
+
+    .info-card p {
+      font-size: 14px;
+      line-height: 1.6;
+      color: var(--text-dim);
+      margin: 0;
+    }
+
+    /* Bottom Nav */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--dark2);
+      border-top: 1px solid rgba(201,169,110,0.1);
+      padding: 12px 24px;
+      display: flex;
+      justify-content: space-around;
+      z-index: 100;
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      color: var(--text-dim);
+      font-size: 11px;
+      cursor: pointer;
+      transition: color 0.3s ease;
+      text-decoration: none;
+    }
+
+    .nav-item.active {
+      color: var(--gold);
+    }
+
+    .nav-item:hover {
+      color: var(--gold);
+    }
+
+    .nav-icon {
+      font-size: 20px;
+    }
+
+    @media (max-width: 768px) {
+      .empty-state h1 {
+        font-size: 32px;
+      }
+
+      .info-cards {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation -->
+  <div class="top-nav">
+    <div class="logo">U'Qube</div>
+    <div class="user-menu">
+      <div class="user-avatar">JD</div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="container">
+    <div class="empty-state">
+      
+      <!-- Empty State Illustration -->
+      <div class="empty-illustration">
+        <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Outer ceremonial ring -->
+          <circle cx="100" cy="100" r="85" stroke="#C9A96E" stroke-width="0.5" opacity="0.2" stroke-dasharray="6 4">
+            <animateTransform attributeName="transform" type="rotate" from="0 100 100" to="360 100 100" dur="60s" repeatCount="indefinite"/>
+          </circle>
+          <circle cx="100" cy="100" r="70" stroke="#C9A96E" stroke-width="0.5" opacity="0.15" stroke-dasharray="4 6">
+            <animateTransform attributeName="transform" type="rotate" from="360 100 100" to="0 100 100" dur="40s" repeatCount="indefinite"/>
+          </circle>
+
+          <!-- Three people in circle -->
+          <g transform="translate(60,85)">
+            <rect x="8" y="15" width="12" height="18" rx="2" fill="none" stroke="#C9A96E" stroke-width="1"/>
+            <circle cx="14" cy="10" r="6" fill="none" stroke="#C9A96E" stroke-width="1"/>
+          </g>
+
+          <g transform="translate(100,70)">
+            <rect x="8" y="15" width="12" height="18" rx="2" fill="none" stroke="#C9A96E" stroke-width="1"/>
+            <circle cx="14" cy="10" r="6" fill="none" stroke="#C9A96E" stroke-width="1"/>
+          </g>
+
+          <g transform="translate(140,85)">
+            <rect x="8" y="15" width="12" height="18" rx="2" fill="none" stroke="#C9A96E" stroke-width="1"/>
+            <circle cx="14" cy="10" r="6" fill="none" stroke="#C9A96E" stroke-width="1"/>
+          </g>
+
+          <!-- Connection lines -->
+          <path d="M74 95 Q100 80 126 95" stroke="#C9A96E" stroke-width="0.5" opacity="0.3" stroke-dasharray="2 2"/>
+          <path d="M126 95 Q140 110 148 110" stroke="#C9A96E" stroke-width="0.5" opacity="0.3" stroke-dasharray="2 2"/>
+          <path d="M74 95 Q60 110 52 110" stroke="#C9A96E" stroke-width="0.5" opacity="0.3" stroke-dasharray="2 2"/>
+
+          <!-- Plus icon in center -->
+          <g transform="translate(100,130)">
+            <circle cx="0" cy="0" r="20" fill="rgba(201,169,110,0.1)" stroke="#C9A96E" stroke-width="1"/>
+            <line x1="-8" y1="0" x2="8" y2="0" stroke="#C9A96E" stroke-width="1.5"/>
+            <line x1="0" y1="-8" x2="0" y2="8" stroke="#C9A96E" stroke-width="1.5"/>
+          </g>
+        </svg>
+      </div>
+
+      <h1>Ready to start your <em>first circle?</em></h1>
+      <p>Create a savings group with friends or family. Set your contribution amount, invite members, and let the wheel decide the order.</p>
+
+      <a href="uqube-onboarding.html" class="btn-large">Create Your First Group</a>
+
+      <!-- Info Cards -->
+      <div class="info-cards">
+        <div class="info-card">
+          <div class="info-card-icon">🎯</div>
+          <h3>Set Your Goal</h3>
+          <p>Choose your monthly contribution and cycle length. The group agrees together.</p>
+        </div>
+        
+        <div class="info-card">
+          <div class="info-card-icon">👥</div>
+          <h3>Invite Members</h3>
+          <p>Add friends and family by email. Everyone joins and pays their deposit to activate.</p>
+        </div>
+        
+        <div class="info-card">
+          <div class="info-card-icon">🎲</div>
+          <h3>Spin the Wheel</h3>
+          <p>The Wheel of Names randomly sets the payout order. Fair and transparent for everyone.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Bottom Navigation -->
+  <div class="bottom-nav">
+    <a href="uqube-dashboard.html" class="nav-item active">
+      <div class="nav-icon">🏠</div>
+      <div>Home</div>
+    </a>
+    <a href="#" class="nav-item">
+      <div class="nav-icon">👥</div>
+      <div>Groups</div>
+    </a>
+    <a href="#" class="nav-item">
+      <div class="nav-icon">💰</div>
+      <div>Payments</div>
+    </a>
+    <a href="#" class="nav-item">
+      <div class="nav-icon">⚙️</div>
+      <div>Settings</div>
+    </a>
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome to U'Qube</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --black: #1a1a1a;
+      --dark2: #0f0f0f;
+      --gold: #C9A96E;
+      --gold-dark: #8A7A60;
+      --accent: #E07340;
+      --text: #E8E6E3;
+      --text-dim: #A39D95;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--black);
+      color: var(--text);
+      overflow-x: hidden;
+    }
+
+    /* Container */
+    .onboarding-container {
+      max-width: 480px;
+      margin: 0 auto;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding: 0;
+    }
+
+    /* Header */
+    .onboarding-header {
+      padding: 24px 24px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 28px;
+      color: var(--gold);
+      font-weight: 600;
+    }
+
+    .step-indicator {
+      font-size: 13px;
+      color: var(--text-dim);
+      letter-spacing: 0.05em;
+    }
+
+    /* Progress bar */
+    .progress-bar {
+      height: 3px;
+      background: rgba(201,169,110,0.1);
+      margin: 24px 0 0;
+      position: relative;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--gold);
+      transition: width 0.4s ease;
+    }
+
+    /* Content */
+    .onboarding-content {
+      flex: 1;
+      padding: 48px 24px 24px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .step {
+      display: none;
+      flex-direction: column;
+      flex: 1;
+      animation: fadeIn 0.4s ease;
+    }
+
+    .step.active {
+      display: flex;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .step-icon {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+    }
+
+    h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 36px;
+      line-height: 1.2;
+      margin-bottom: 16px;
+      text-align: center;
+    }
+
+    h1 em {
+      color: var(--gold);
+      font-style: normal;
+    }
+
+    .step-description {
+      font-size: 16px;
+      line-height: 1.6;
+      color: var(--text-dim);
+      text-align: center;
+      margin-bottom: 48px;
+      max-width: 360px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    /* Form elements */
+    .form-group {
+      margin-bottom: 24px;
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 12px;
+    }
+
+    input, textarea {
+      width: 100%;
+      background: rgba(201,169,110,0.05);
+      border: 1px solid rgba(201,169,110,0.15);
+      color: var(--text);
+      padding: 16px;
+      font-size: 16px;
+      font-family: 'DM Sans', sans-serif;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+    }
+
+    input:focus, textarea:focus {
+      outline: none;
+      border-color: var(--gold);
+      background: rgba(201,169,110,0.08);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    /* Buttons */
+    .btn-container {
+      margin-top: auto;
+      padding-top: 24px;
+      display: flex;
+      gap: 12px;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 18px 32px;
+      font-size: 15px;
+      font-weight: 500;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-family: 'DM Sans', sans-serif;
+      letter-spacing: 0.02em;
+    }
+
+    .btn-primary {
+      background: var(--gold);
+      color: var(--black);
+    }
+
+    .btn-primary:hover {
+      background: var(--gold-dark);
+      transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--text-dim);
+      border: 1px solid rgba(201,169,110,0.2);
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--gold);
+      color: var(--text);
+    }
+
+    /* Feature list */
+    .feature-list {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      margin-bottom: 48px;
+    }
+
+    .feature-item {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+    }
+
+    .feature-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: rgba(201,169,110,0.1);
+      border: 1px solid rgba(201,169,110,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 20px;
+    }
+
+    .feature-text h3 {
+      font-size: 16px;
+      font-weight: 500;
+      margin-bottom: 4px;
+      color: var(--gold);
+    }
+
+    .feature-text p {
+      font-size: 14px;
+      color: var(--text-dim);
+      line-height: 1.5;
+    }
+
+    /* Member invite */
+    .invite-input-group {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .invite-input-group input {
+      flex: 1;
+    }
+
+    .btn-add {
+      padding: 16px 24px;
+      background: rgba(201,169,110,0.1);
+      border: 1px solid rgba(201,169,110,0.3);
+      color: var(--gold);
+      border-radius: 8px;
+      font-size: 15px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      white-space: nowrap;
+    }
+
+    .btn-add:hover {
+      background: rgba(201,169,110,0.15);
+    }
+
+    .invited-members {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 24px;
+    }
+
+    .member-tag {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px;
+      background: rgba(201,169,110,0.05);
+      border: 1px solid rgba(201,169,110,0.15);
+      border-radius: 8px;
+    }
+
+    .member-email {
+      color: var(--text);
+      font-size: 14px;
+    }
+
+    .btn-remove {
+      background: none;
+      border: none;
+      color: var(--accent);
+      cursor: pointer;
+      padding: 4px 8px;
+      font-size: 13px;
+    }
+
+    /* Summary card */
+    .summary-card {
+      background: rgba(201,169,110,0.05);
+      border: 1px solid rgba(201,169,110,0.15);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 32px;
+    }
+
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(201,169,110,0.1);
+    }
+
+    .summary-row:last-child {
+      border-bottom: none;
+    }
+
+    .summary-label {
+      font-size: 14px;
+      color: var(--text-dim);
+    }
+
+    .summary-value {
+      font-size: 14px;
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    /* Success animation */
+    .success-icon {
+      width: 120px;
+      height: 120px;
+      margin: 0 auto 32px;
+      position: relative;
+    }
+
+    .success-circle {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: rgba(201,169,110,0.1);
+      border: 2px solid var(--gold);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 48px;
+      animation: scaleIn 0.5s ease;
+    }
+
+    @keyframes scaleIn {
+      from { transform: scale(0); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <div class="onboarding-container">
+    <!-- Header -->
+    <div class="onboarding-header">
+      <div class="logo">U'Qube</div>
+      <div class="step-indicator">Step <span id="currentStep">1</span> of 2</div>
+    </div>
+
+    <!-- Progress -->
+    <div class="progress-bar">
+      <div class="progress-fill" id="progressFill" style="width: 25%"></div>
+    </div>
+
+    <!-- Content -->
+    <div class="onboarding-content">
+      
+      <!-- Step 1: Group Details -->
+      <div class="step active" data-step="1">
+        <div class="step-icon">👥</div>
+        <h1>Create Your <em>Group</em></h1>
+        <p class="step-description">Give your savings circle a name and set the basic details.</p>
+
+        <form id="groupForm">
+          <div class="form-group">
+            <label>Group Name</label>
+            <input type="text" id="groupName" placeholder="e.g., Family Circle, Friends Fund" required>
+          </div>
+
+          <div class="form-group">
+            <label>Monthly Contribution (£)</label>
+            <input type="number" id="contribution" placeholder="100" min="10" required>
+          </div>
+
+          <div class="form-group">
+            <label>Invite Members (comma-separated emails)</label>
+            <textarea id="memberEmails" placeholder="friend1@example.com, friend2@example.com, friend3@example.com" rows="3" style="resize: vertical;"></textarea>
+            <p style="font-size: 12px; color: var(--text-dim); margin-top: 8px;">
+              They'll receive invitations to join and can accept or decline.
+            </p>
+          </div>
+        </form>
+
+        <div class="btn-container">
+          <button class="btn btn-primary" onclick="nextStep()">Continue</button>
+        </div>
+      </div>
+
+      <!-- Step 2: Review & Activate -->
+      <div class="step" data-step="2">
+        <div class="step-icon">🎉</div>
+        <h1>Review & <em>Activate</em></h1>
+        <p class="step-description">All members have accepted! Pay your deposit to activate the group and spin the wheel.</p>
+
+        <div class="summary-card">
+          <div class="summary-row">
+            <span class="summary-label">Group Name</span>
+            <span class="summary-value" id="summaryName">—</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">Monthly Contribution</span>
+            <span class="summary-value" id="summaryContribution">—</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">Total Members</span>
+            <span class="summary-value" id="summaryMembers">0</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">Your Refundable Deposit</span>
+            <span class="summary-value" id="summaryDeposit">—</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">First Month Contribution</span>
+            <span class="summary-value" id="summaryFirstMonth">—</span>
+          </div>
+          <div class="summary-row" style="border-top: 2px solid rgba(201,169,110,0.3); padding-top: 16px; margin-top: 8px;">
+            <span class="summary-label" style="font-weight: 500; color: var(--gold);">Your Total Payment</span>
+            <span class="summary-value" style="font-weight: 500; color: var(--gold); font-size: 18px;" id="summaryTotal">—</span>
+          </div>
+        </div>
+
+        <p style="font-size: 13px; color: var(--text-dim); text-align: center; margin-bottom: 24px;">
+          Each member (including you) pays the same amount: deposit + first contribution. Your deposit is refundable when you leave the group.
+        </p>
+
+        <div class="btn-container">
+          <button class="btn btn-secondary" onclick="prevStep()">Back</button>
+          <button class="btn btn-primary" onclick="mockPayment()">Pay Now</button>
+        </div>
+      </div>
+
+      <!-- Step 3: Success -->
+      <div class="step" data-step="3">
+        <div class="success-icon">
+          <div class="success-circle">✓</div>
+        </div>
+        <h1>Group <em>Created!</em></h1>
+        <p class="step-description">Invitations have been sent. Once everyone joins and pays their deposit, we'll spin the wheel to set the order.</p>
+
+        <div class="btn-container">
+          <button class="btn btn-primary" onclick="goToDashboard()">Go to Dashboard</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    let currentStep = 1;
+    const totalSteps = 2;
+    const invitedMembers = [];
+
+    function updateProgress() {
+      const progress = (currentStep / totalSteps) * 100;
+      document.getElementById('progressFill').style.width = progress + '%';
+      document.getElementById('currentStep').textContent = currentStep;
+    }
+
+    function nextStep() {
+      // Validate current step
+      if (currentStep === 1) {
+        const groupName = document.getElementById('groupName').value;
+        const contribution = document.getElementById('contribution').value;
+        const memberEmailsText = document.getElementById('memberEmails').value.trim();
+        
+        if (!groupName || !contribution) {
+          alert('Please fill in all required fields');
+          return;
+        }
+
+        // Process member emails
+        invitedMembers.length = 0; // Clear array
+        if (memberEmailsText) {
+          const emails = memberEmailsText.split(',').map(e => e.trim()).filter(e => e && e.includes('@'));
+          invitedMembers.push(...emails);
+        }
+
+        // Update summary
+        document.getElementById('summaryName').textContent = groupName;
+        document.getElementById('summaryContribution').textContent = '£' + contribution;
+        document.getElementById('summaryDeposit').textContent = '£' + contribution;
+        document.getElementById('summaryFirstMonth').textContent = '£' + contribution;
+        document.getElementById('summaryTotal').textContent = '£' + (parseInt(contribution) * 2);
+        document.getElementById('summaryMembers').textContent = (invitedMembers.length + 1); // +1 for creator
+      }
+
+      // Hide current step
+      document.querySelector('.step.active').classList.remove('active');
+      
+      // Show next step
+      currentStep++;
+      document.querySelector(`[data-step="${currentStep}"]`).classList.add('active');
+      
+      updateProgress();
+    }
+
+    function prevStep() {
+      document.querySelector('.step.active').classList.remove('active');
+      currentStep--;
+      document.querySelector(`[data-step="${currentStep}"]`).classList.add('active');
+      updateProgress();
+    }
+
+    function addMembers() {
+      const emailsInput = document.getElementById('memberEmails');
+      const emailsText = emailsInput.value.trim();
+      
+      if (!emailsText) {
+        alert('Please enter at least one email');
+        return;
+      }
+
+      // Split by comma and clean up
+      const emails = emailsText.split(',').map(e => e.trim()).filter(e => e);
+      
+      let addedCount = 0;
+      emails.forEach(email => {
+        if (!email.includes('@')) {
+          return; // Skip invalid emails
+        }
+
+        if (invitedMembers.includes(email)) {
+          return; // Skip duplicates
+        }
+
+        invitedMembers.push(email);
+        
+        const membersList = document.getElementById('membersList');
+        const memberTag = document.createElement('div');
+        memberTag.className = 'member-tag';
+        memberTag.innerHTML = `
+          <span class="member-email">${email}</span>
+          <button class="btn-remove" onclick="removeMember('${email}')">Remove</button>
+        `;
+        membersList.appendChild(memberTag);
+        addedCount++;
+      });
+      
+      if (addedCount > 0) {
+        emailsInput.value = '';
+        alert(`${addedCount} member(s) invited successfully!`);
+      } else {
+        alert('No valid new emails to add');
+      }
+    }
+
+    function addMember() {
+      // Keep old function for compatibility
+      addMembers();
+    }
+
+    function removeMember(email) {
+      const index = invitedMembers.indexOf(email);
+      if (index > -1) {
+        invitedMembers.splice(index, 1);
+      }
+      
+      // Rebuild list
+      const membersList = document.getElementById('membersList');
+      membersList.innerHTML = '';
+      invitedMembers.forEach(e => {
+        const memberTag = document.createElement('div');
+        memberTag.className = 'member-tag';
+        memberTag.innerHTML = `
+          <span class="member-email">${e}</span>
+          <button class="btn-remove" onclick="removeMember('${e}')">Remove</button>
+        `;
+        membersList.appendChild(memberTag);
+      });
+    }
+
+    function mockPayment() {
+      // Simulate payment processing (no alert)
+      // In production, this would integrate with Stripe
+      
+      // Show success
+      document.querySelector('.step.active').classList.remove('active');
+      document.querySelector('[data-step="3"]').classList.add('active');
+      
+      // Hide step indicator
+      document.querySelector('.step-indicator').style.display = 'none';
+      document.getElementById('progressFill').style.width = '100%';
+    }
+
+    function goToDashboard() {
+      window.location.href = 'uqube-dashboard-active.html';
+    }
+  </script>
+</body>
+</html>
